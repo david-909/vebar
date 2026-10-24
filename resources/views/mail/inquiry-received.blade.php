@@ -6,6 +6,9 @@ Ime:        {!! $inquiry['ime'] !!}
 Firma:      {!! $inquiry['firma'] ?: '(nije uneto)' !!}
 Kontakt:    {!! $inquiry['kontakt'] !!}
 Sajt:       {!! $inquiry['sajt'] ?: '(nije uneto)' !!}
+@if ($inquiry['paket'])
+Paket:      {!! $inquiry['paket'] !!}
+@endif
 
 Poruka:
 {!! $inquiry['poruka'] ?: '(nije uneto)' !!}

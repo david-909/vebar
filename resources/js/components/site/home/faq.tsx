@@ -2,12 +2,18 @@ import Reveal from '@/components/site/reveal';
 import SectionHeading from '@/components/site/section-heading';
 import type { FaqItem } from '@/types';
 
-export default function Faq({ items }: { items: FaqItem[] }) {
+type FaqProps = {
+    items: FaqItem[];
+    /** Section number on the homepage; null leaves it out. */
+    number?: string | null;
+};
+
+export default function Faq({ items, number = '06' }: FaqProps) {
     return (
         <section className="tint ruled" id="faq" aria-labelledby="faq-h">
             <div className="wrap">
                 <SectionHeading
-                    number="06"
+                    number={number ?? undefined}
                     label="Pitanja"
                     id="faq-h"
                     title="Česta pitanja"

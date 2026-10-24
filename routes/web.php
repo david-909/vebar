@@ -28,6 +28,7 @@ Route::middleware(UseSiteRootView::class)
     ->withoutMiddleware($stateless)
     ->group(function () {
         Route::get('/', [PageController::class, 'home'])->name('home');
+        Route::get('izrada-sajta', [PageController::class, 'landing'])->name('landing');
 
         Route::get('vodic', [GuideController::class, 'index'])->name('guides.index');
         Route::get('vodic/{slug}', [GuideController::class, 'show'])

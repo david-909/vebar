@@ -63,7 +63,7 @@ class InquiryController extends Controller
     private function failed(StoreInquiryRequest $request, string $message): RedirectResponse
     {
         if (! $request->expectsJson()) {
-            return redirect()->to(route('home').'#kontakt', 303);
+            return redirect()->to($request->formUrl(), 303);
         }
 
         throw ValidationException::withMessages(['form' => $message]);

@@ -29,6 +29,16 @@ test('a valid inquiry is mailed to the recipient with the visitor details', func
     });
 });
 
+test('the package chosen on the landing page is mailed with the inquiry', function () {
+    $this->postJson(route('inquiries.store'), [
+        'ime' => 'Ana Anić',
+        'kontakt' => '060 123 4567',
+        'paket' => 'Biznis',
+    ])->assertOk();
+
+    Mail::assertSent(InquiryReceived::class, fn (InquiryReceived $mail) => $mail->inquiry['paket'] === 'Biznis');
+});
+
 test('an inquiry with a phone number has no reply-to address', function () {
     $this->postJson(route('inquiries.store'), ['ime' => 'Ana Anić', 'kontakt' => '060 123 4567'])->assertOk();
 
@@ -57,6 +67,13 @@ test('an invalid form submitted without javascript returns the visitor to the fo
     $response = $this->post(route('inquiries.store'), ['ime' => '']);
 
     $response->assertStatus(303)->assertRedirect(route('home').'#kontakt');
+    Mail::assertNothingSent();
+});
+
+test('an invalid landing page form submitted without javascript returns the visitor to the landing page', function () {
+    $response = $this->post(route('inquiries.store'), ['ime' => ''], ['referer' => 'https://vebar.rs/izrada-sajta?gclid=abc']);
+
+    $response->assertStatus(303)->assertRedirect(route('landing').'#upit');
     Mail::assertNothingSent();
 });
 

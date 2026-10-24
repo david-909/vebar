@@ -19,6 +19,23 @@ export function ArrowIcon({ size = 14 }: IconProps) {
     );
 }
 
+export function ExternalIcon({ size = 12 }: IconProps) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <path d="M5 3h8v8M13 3L3 13" />
+        </svg>
+    );
+}
+
 export function LogoMark({ inverted = false }: { inverted?: boolean }) {
     return (
         <svg

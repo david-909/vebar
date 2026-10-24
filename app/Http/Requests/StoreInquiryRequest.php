@@ -30,6 +30,7 @@ class StoreInquiryRequest extends FormRequest
             'firma' => ['nullable', 'string', 'max:160'],
             'kontakt' => ['required', 'string', 'min:5', 'max:160'],
             'sajt' => ['nullable', 'string', 'max:200'],
+            'paket' => ['nullable', 'string', 'max:60'],
             'poruka' => ['nullable', 'string', 'max:4000'],
             'veb_adresa' => ['nullable', 'string'],
             'ts' => ['nullable', 'integer'],
@@ -51,6 +52,7 @@ class StoreInquiryRequest extends FormRequest
             'kontakt.max' => 'Kontakt može imati najviše :max znakova.',
             'firma.max' => 'Naziv firme može imati najviše :max znakova.',
             'sajt.max' => 'Adresa sajta može imati najviše :max znakova.',
+            'paket.max' => 'Naziv paketa može imati najviše :max znakova.',
             'poruka.max' => 'Poruka može imati najviše :max znakova.',
         ];
     }
@@ -72,7 +74,7 @@ class StoreInquiryRequest extends FormRequest
     /**
      * The validated inquiry fields, with line breaks removed from single-line inputs.
      *
-     * @return array{ime: string, firma: string|null, kontakt: string, sajt: string|null, poruka: string|null}
+     * @return array{ime: string, firma: string|null, kontakt: string, sajt: string|null, paket: string|null, poruka: string|null}
      */
     public function inquiry(): array
     {
@@ -85,6 +87,7 @@ class StoreInquiryRequest extends FormRequest
             'firma' => $singleLine($this->validated('firma')),
             'kontakt' => (string) $singleLine($this->validated('kontakt')),
             'sajt' => $singleLine($this->validated('sajt')),
+            'paket' => $singleLine($this->validated('paket')),
             'poruka' => $this->validated('poruka'),
         ];
     }
@@ -105,13 +108,25 @@ class StoreInquiryRequest extends FormRequest
     }
 
     /**
+     * The form the visitor came from: the landing page or the homepage.
+     */
+    public function formUrl(): string
+    {
+        $referer = (string) parse_url((string) $this->headers->get('referer'), PHP_URL_PATH);
+
+        return $referer === '/izrada-sajta'
+            ? route('landing').'#upit'
+            : route('home').'#kontakt';
+    }
+
+    /**
      * Without JavaScript the form posts natively and there is no session to
      * flash errors into, so send the visitor back to the form instead.
      */
     protected function failedValidation(Validator $validator): void
     {
         if (! $this->expectsJson()) {
-            throw new HttpResponseException(redirect()->to(route('home').'#kontakt', 303));
+            throw new HttpResponseException(redirect()->to($this->formUrl(), 303));
         }
 
         parent::failedValidation($validator);

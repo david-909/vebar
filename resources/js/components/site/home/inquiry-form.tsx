@@ -13,12 +13,14 @@ type InquiryData = {
     firma: string;
     kontakt: string;
     sajt: string;
+    paket: string;
     poruka: string;
     veb_adresa: string;
 };
 
 type Prefill = {
     website?: string;
+    packageName?: string;
     message?: string;
     estimatedValue?: number;
 };
@@ -41,15 +43,22 @@ export function InquiryFormProvider({ children }: { children: ReactNode }) {
         firma: '',
         kontakt: '',
         sajt: '',
+        paket: '',
         poruka: '',
         veb_adresa: '',
     });
     const [estimatedValue, setEstimatedValue] = useState<number | null>(null);
 
-    const prefill = ({ website, message, estimatedValue: value }: Prefill) => {
+    const prefill = ({
+        website,
+        packageName,
+        message,
+        estimatedValue: value,
+    }: Prefill) => {
         form.setData((data) => ({
             ...data,
             sajt: website && !data.sajt ? website : data.sajt,
+            paket: packageName ?? data.paket,
             poruka:
                 message && !data.poruka.includes(message)
                     ? message + (data.poruka ? `\n\n${data.poruka}` : '')
@@ -89,9 +98,32 @@ type Status =
     | { type: 'success'; message: string }
     | { type: 'error'; message: ReactNode };
 
-export function ContactForm() {
+export type PackageOption = {
+    name: string;
+    price: string;
+    /** Sent as the lead value to analytics; omitted when the price is open-ended. */
+    value?: number;
+};
+
+type ContactFormProps = {
+    /**
+     * "landing" asks which package the visitor wants instead of the company
+     * name, keeping the Google Ads form short.
+     */
+    variant?: 'kontakt' | 'landing';
+    packages?: PackageOption[];
+};
+
+export function ContactForm({
+    variant = 'kontakt',
+    packages = [],
+}: ContactFormProps) {
     const { site } = usePage().props;
-    const { form, estimatedValue } = useInquiryForm();
+    const { form, estimatedValue: prefilledValue } = useInquiryForm();
+    const isLanding = variant === 'landing';
+    const estimatedValue =
+        packages.find((option) => option.name === form.data.paket)?.value ??
+        prefilledValue;
     const [status, setStatus] = useState<Status>({ type: 'idle' });
     const renderedAt = useRef(0);
     const errors = form.errors as Partial<
@@ -144,8 +176,11 @@ export function ContactForm() {
                 onSuccess: (response) => {
                     setStatus({ type: 'success', message: response.message });
                     track('generate_lead', {
-                        form_location: 'kontakt',
+                        form_location: variant,
                         has_website: form.data.sajt.trim() !== '',
+                        ...(form.data.paket
+                            ? { package: form.data.paket }
+                            : {}),
                         ...(estimatedValue
                             ? { value: estimatedValue, currency: 'RSD' }
                             : {}),
@@ -220,7 +255,9 @@ export function ContactForm() {
             method="post"
             onSubmit={submit}
             noValidate
-            aria-label="Upit za besplatnu analizu"
+            aria-label={
+                isLanding ? 'Upit za izradu sajta' : 'Upit za besplatnu analizu'
+            }
         >
             <div className="fld">
                 <label htmlFor="f-ime">Ime i prezime</label>
@@ -233,18 +270,21 @@ export function ContactForm() {
                 />
                 {fieldError('ime')}
             </div>
-            <div className="fld">
-                <label htmlFor="f-firma">
-                    Naziv firme <span className="opt-l">(nije obavezno)</span>
-                </label>
-                <input
-                    {...fieldProps('firma')}
-                    type="text"
-                    autoComplete="organization"
-                    placeholder="Naziv vaše firme"
-                />
-                {fieldError('firma')}
-            </div>
+            {!isLanding && (
+                <div className="fld">
+                    <label htmlFor="f-firma">
+                        Naziv firme{' '}
+                        <span className="opt-l">(nije obavezno)</span>
+                    </label>
+                    <input
+                        {...fieldProps('firma')}
+                        type="text"
+                        autoComplete="organization"
+                        placeholder="Naziv vaše firme"
+                    />
+                    {fieldError('firma')}
+                </div>
+            )}
             <div className="fld">
                 <label htmlFor="f-kontakt">Telefon ili mejl</label>
                 <input
@@ -256,9 +296,39 @@ export function ContactForm() {
                 />
                 {fieldError('kontakt')}
             </div>
+            {packages.length > 0 && (
+                <fieldset className="fld pk-pick">
+                    <legend>Koji paket vas zanima?</legend>
+                    <div className="opts two">
+                        {[
+                            ...packages,
+                            { name: 'Nisam siguran', price: 'predložite mi' },
+                        ].map((option) => (
+                            <label key={option.name} className="opt">
+                                <input
+                                    type="radio"
+                                    name="paket"
+                                    value={option.name}
+                                    checked={form.data.paket === option.name}
+                                    onChange={() =>
+                                        form.setData('paket', option.name)
+                                    }
+                                />
+                                <span className="mark" aria-hidden="true" />
+                                <span>
+                                    <span className="t">{option.name}</span>
+                                    <small>{option.price}</small>
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                </fieldset>
+            )}
             <div className="fld">
                 <label htmlFor="f-sajt">
-                    Adresa sadašnjeg sajta{' '}
+                    {isLanding
+                        ? 'Sadašnji sajt, ako ga imate'
+                        : 'Adresa sadašnjeg sajta'}{' '}
                     <span className="opt-l">(nije obavezno)</span>
                 </label>
                 <input
@@ -271,11 +341,20 @@ export function ContactForm() {
                 {fieldError('sajt')}
             </div>
             <div className="fld">
-                <label htmlFor="f-poruka">Šta vam treba?</label>
+                <label htmlFor="f-poruka">
+                    {isLanding ? (
+                        <>
+                            Čime se bavite?{' '}
+                            <span className="opt-l">(nije obavezno)</span>
+                        </>
+                    ) : (
+                        'Šta vam treba?'
+                    )}
+                </label>
                 <textarea
                     {...fieldProps('poruka')}
                     placeholder="Ukratko: čime se bavite i šta očekujete od sajta."
-                    rows={4}
+                    rows={isLanding ? 3 : 4}
                 />
                 {fieldError('poruka')}
             </div>

@@ -34,6 +34,17 @@ test('the homepage renders with its metadata, faq and structured data', function
     expect(schemaTypes($response))->toBe(['ProfessionalService', 'WebSite', 'WebPage', 'FAQPage']);
 });
 
+test('the ads landing page renders its faq and is not indexed', function () {
+    $response = $this->get(route('landing'));
+
+    $response->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->component('site/landing')
+        ->where('seo.canonical', 'https://vebar.rs/izrada-sajta')
+        ->where('seo.robots', 'noindex, follow')
+        ->has('faq', 6)
+    );
+});
+
 test('the guide index lists every guide', function () {
     $response = $this->get(route('guides.index'));
 
@@ -94,7 +105,7 @@ test('public pages set no cookies', function (string $path) {
 
     $response->assertOk();
     expect($response->headers->getCookies())->toBe([]);
-})->with(['/', '/vodic', '/vodic/koliko-traje-izrada-sajta', '/politika-privatnosti']);
+})->with(['/', '/izrada-sajta', '/vodic', '/vodic/koliko-traje-izrada-sajta', '/politika-privatnosti']);
 
 test('urls with a trailing slash permanently redirect to the canonical url', function (string $from, string $to) {
     // The test client strips trailing slashes, so send the raw request through the kernel.
@@ -116,7 +127,8 @@ test('the sitemap lists the indexable pages', function () {
         ->assertSee('<loc>https://vebar.rs/</loc>', false)
         ->assertSee('<loc>https://vebar.rs/vodic/online-katalog-za-veleprodaju</loc>', false)
         ->assertSee('<lastmod>2026-10-18</lastmod>', false)
-        ->assertDontSee('/hvala', false);
+        ->assertDontSee('/hvala', false)
+        ->assertDontSee('/izrada-sajta', false);
 });
 
 test('analytics tags are rendered only when enabled', function (bool $enabled) {

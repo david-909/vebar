@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import Reveal from '@/components/site/reveal';
 
 type SectionHeadingProps = {
-    number: string;
-    label: string;
+    /** Omit both to render the heading without its numbered label. */
+    number?: string;
+    label?: string;
     title: ReactNode;
     id?: string;
     children?: ReactNode;
@@ -17,10 +18,12 @@ export default function SectionHeading({
     children,
 }: SectionHeadingProps) {
     return (
-        <Reveal className="shead">
-            <div className="snum" aria-hidden="true">
-                {number} / {label}
-            </div>
+        <Reveal className={number ? 'shead' : 'shead solo'}>
+            {number && (
+                <div className="snum" aria-hidden="true">
+                    {number} / {label}
+                </div>
+            )}
             <div>
                 <h2 className="up" id={id}>
                     {title}

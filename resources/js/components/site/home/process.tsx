@@ -1,7 +1,7 @@
 import Reveal from '@/components/site/reveal';
 import SectionHeading from '@/components/site/section-heading';
 
-const STEPS = [
+export const STEPS = [
     {
         title: 'Razgovor',
         text: 'Kratak razgovor telefonom: čime se bavite, ko su vaše mušterije i šta vam smeta na postojećem sajtu.',

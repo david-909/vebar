@@ -41,6 +41,31 @@ class PageController extends Controller
     }
 
     /**
+     * Show the Google Ads landing page. Not indexed, so it doesn't compete
+     * with the homepage in organic search.
+     */
+    public function landing(): Response
+    {
+        /** @var list<array{question: string, answer: string}> $faq */
+        $faq = require resource_path('content/landing-faq.php');
+
+        $seo = SeoData::make(
+            title: 'Izrada sajta po fiksnoj ceni, od 36.000 RSD — Vebar',
+            description: 'Izrada sajta za firme iz cele Srbije: tri paketa sa cenom unapred, gotov sajt za dve do tri nedelje, domen i sajt na vaše ime.',
+            path: '/izrada-sajta',
+        )->noindex();
+
+        $seo->schema(
+            StructuredData::webPage($seo, withBreadcrumb: false),
+        );
+
+        return Inertia::render('site/landing', [
+            'seo' => $seo,
+            'faq' => $faq,
+        ]);
+    }
+
+    /**
      * Show the privacy policy.
      */
     public function privacy(): Response

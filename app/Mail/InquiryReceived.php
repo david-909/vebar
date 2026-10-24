@@ -15,7 +15,7 @@ class InquiryReceived extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array{ime: string, firma: string|null, kontakt: string, sajt: string|null, poruka: string|null}  $inquiry
+     * @param  array{ime: string, firma: string|null, kontakt: string, sajt: string|null, paket: string|null, poruka: string|null}  $inquiry
      * @param  array<string, string>  $attribution
      */
     public function __construct(

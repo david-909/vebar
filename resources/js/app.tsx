@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
+import LandingLayout from '@/layouts/landing-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import SiteLayout from '@/layouts/site-layout';
 import { trackPageView } from '@/lib/analytics';
@@ -21,6 +22,8 @@ void createInertiaApp({
             : appName,
     layout: (name) => {
         switch (true) {
+            case name === 'site/landing':
+                return LandingLayout;
             case name.startsWith('site/'):
                 return SiteLayout;
             case name === 'welcome':
