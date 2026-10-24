@@ -2,11 +2,15 @@
 
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\RedirectTrailingSlash;
+use App\Seo\SeoData;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(RedirectTrailingSlash::class);
+
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->web(append: [
@@ -27,4 +33,24 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
+            $status = $response->statusCode();
+            $showDebugPage = $status >= 500 && config('app.debug');
+
+            if (! in_array($status, [403, 404, 500, 503], true) || $showDebugPage || $response->request->expectsJson()) {
+                return null;
+            }
+
+            $seo = SeoData::make(
+                title: $status === 404 ? 'Stranica nije pronađena — Vebar' : 'Greška — Vebar',
+                description: 'Tražena stranica trenutno nije dostupna.',
+                path: '/'.ltrim($response->request->path(), '/'),
+            )->noindex();
+
+            return $response
+                ->render('site/error', ['status' => $status, 'seo' => $seo])
+                ->rootView('site')
+                ->withSharedData();
+        });
     })->create();

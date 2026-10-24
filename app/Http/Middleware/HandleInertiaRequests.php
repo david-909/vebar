@@ -2,7 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Content\Guide;
+use App\Content\GuideRepository;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +45,19 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'site' => Inertia::once(fn (): array => [
+                'name' => config('site.name'),
+                'tagline' => config('site.tagline'),
+                'email' => config('site.email'),
+                'phone' => config('site.phone'),
+                'phoneDisplay' => config('site.phone_display'),
+                'areaServed' => config('site.area_served'),
+                'city' => config('site.city'),
+                'footerGuides' => app(GuideRepository::class)->all()
+                    ->take(3)
+                    ->map(fn (Guide $guide): array => ['slug' => $guide->slug, 'title' => $guide->cardTitle])
+                    ->values(),
+            ]),
         ];
     }
 }
