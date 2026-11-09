@@ -77,18 +77,22 @@ jobs:
             IdentityFile ~/.ssh/deploy_key
             IdentitiesOnly yes
             StrictHostKeyChecking yes
+            BatchMode yes
+            ConnectTimeout 10
+            ServerAliveInterval 15
+            ServerAliveCountMax 3
           EOF
 
       - name: Maintenance mode on
         run: |
-          ssh deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan down --retry=15 || true"
+          ssh -n deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan down --retry=15 || true"
 
       # --delete wipes anything on the server that is not in the repo, except
       # the excluded paths below, which are server state and must survive.
       # Add any folder the site writes to at runtime (uploads etc.) here.
       - name: Upload code
         run: |
-          ssh deploy "mkdir -p '$DEPLOY_PATH'"
+          ssh -n deploy "mkdir -p '$DEPLOY_PATH'"
           rsync -az --delete \
             --exclude='/.git/' \
             --exclude='/.github/' \
@@ -136,4 +140,4 @@ jobs:
       - name: Maintenance mode off
         if: always()
         run: |
-          ssh deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan up || true"
+          ssh -n deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan up || true"
