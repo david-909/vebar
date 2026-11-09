@@ -1,0 +1,139 @@
+name: Deploy
+
+# vebar.rs — Builds vendor/ here (the host has no reason to run Composer) and
+# rsyncs the app over SSH. public/build/ is committed, so there is no Node step.
+on:
+  workflow_dispatch:
+  # Uncomment to deploy automatically on every push to main:
+  # push:
+  #   branches: [main]
+
+# Never run two deploys at once; a newer run waits for the running one.
+concurrency:
+  group: deploy-vebar-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+
+    env:
+      SSH_HOST: ${{ vars.SSH_HOST }}
+      SSH_PORT: ${{ vars.SSH_PORT || '22' }}
+      SSH_USER: ${{ vars.SSH_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      PHP_BIN: ${{ vars.PHP_BIN || 'php' }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check configuration
+        run: |
+          missing=0
+          for v in SSH_HOST SSH_USER DEPLOY_PATH; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Variable $v is empty. Add it under Settings → Environments → production → Variables."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: gd, pdo_mysql, mbstring, intl
+          tools: composer:v2
+          coverage: none
+
+      - name: Composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      # --no-scripts: package:discover and friends run on the server against
+      # the real .env, not here.
+      - name: Install production dependencies
+        run: composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy
+            HostName $SSH_HOST
+            Port $SSH_PORT
+            User $SSH_USER
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+
+      - name: Maintenance mode on
+        run: |
+          ssh deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan down --retry=15 || true"
+
+      # --delete wipes anything on the server that is not in the repo, except
+      # the excluded paths below, which are server state and must survive.
+      # Add any folder the site writes to at runtime (uploads etc.) here.
+      - name: Upload code
+        run: |
+          ssh deploy "mkdir -p '$DEPLOY_PATH'"
+          rsync -az --delete \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/.claude/' \
+            --exclude='/node_modules/' \
+            --exclude='/tests/' \
+            --exclude='/tools/' \
+            --exclude='/.env' \
+            --exclude='/storage/' \
+            --exclude='/bootstrap/cache/*.php' \
+            --exclude='/public/storage' \
+            --exclude='/public/hot' \
+            --exclude='/public/.well-known/' \
+            --exclude='error_log' \
+            ./ "deploy:$DEPLOY_PATH/"
+
+      - name: Migrate and cache
+        run: |
+          ssh deploy "DEPLOY_PATH='$DEPLOY_PATH' PHP='$PHP_BIN' bash -s" <<'EOF'
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+
+          # storage/ is never uploaded; make sure its skeleton exists.
+          mkdir -p storage/app/public storage/app/private \
+                   storage/framework/cache/data storage/framework/sessions \
+                   storage/framework/views storage/logs bootstrap/cache
+
+          # A stale Vite "hot" file makes Laravel load assets from a dev server.
+          rm -f public/hot
+
+          if [ ! -f .env ]; then
+            echo "::error::$DEPLOY_PATH/.env is missing. Create it on the server first."
+            exit 1
+          fi
+
+          $PHP artisan optimize:clear
+          $PHP artisan package:discover --ansi
+          $PHP artisan migrate --force
+          [ -L public/storage ] || $PHP artisan storage:link
+          $PHP artisan optimize
+          EOF
+
+      # Runs even if a step above failed, so the site never stays down. A
+      # failed migration leaves the old schema with new code; check the log.
+      - name: Maintenance mode off
+        if: always()
+        run: |
+          ssh deploy "cd '$DEPLOY_PATH' 2>/dev/null && [ -f artisan ] && $PHP_BIN artisan up || true"
