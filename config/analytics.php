@@ -25,14 +25,14 @@ return [
     | Consent Mode v2
     |--------------------------------------------------------------------------
     |
-    | Default consent state sent before any tag fires. When a consent banner
-    | (CMP) is introduced, set these to "denied" and let the banner call
-    | window.vebarConsent.update({...}) once the visitor makes a choice.
+    | Default consent state sent before any tag fires. Everything starts
+    | denied; the cookie banner (resources/js/components/site/cookie-consent.tsx)
+    | calls window.vebarConsent.update({...}) once the visitor accepts.
     |
     */
 
     'consent' => [
-        'analytics_storage' => env('CONSENT_ANALYTICS_DEFAULT', 'granted'),
+        'analytics_storage' => env('CONSENT_ANALYTICS_DEFAULT', 'denied'),
         'ad_storage' => env('CONSENT_ADS_DEFAULT', 'denied'),
         'ad_user_data' => env('CONSENT_ADS_DEFAULT', 'denied'),
         'ad_personalization' => env('CONSENT_ADS_DEFAULT', 'denied'),

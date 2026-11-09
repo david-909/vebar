@@ -24,7 +24,7 @@ export default function LandingHero() {
         <section className="lhero" aria-labelledby="hero-h">
             <div className="wrap lhero-grid">
                 <div>
-                    <h1 id="hero-h">
+                    <h1 id="hero-h" className="vb-kursor">
                         Izrada sajta po ceni koju znate <em>unapred.</em>
                     </h1>
                     <p className="lede">

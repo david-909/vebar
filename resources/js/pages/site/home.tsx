@@ -8,7 +8,6 @@ import PriceCalculator from '@/components/site/home/price-calculator';
 import Process from '@/components/site/home/process';
 import SelfCheck from '@/components/site/home/self-check';
 import Services from '@/components/site/home/services';
-import SpeedCheck from '@/components/site/home/speed-check';
 import Seo from '@/components/site/seo';
 import { track } from '@/lib/analytics';
 import type { FaqItem, GuideCard, SitePageProps } from '@/types';
@@ -17,7 +16,6 @@ type HomeProps = SitePageProps & {
     faq: FaqItem[];
     guides: GuideCard[];
     guideCount: number;
-    pagespeedKey: string | null;
 };
 
 const STRIP_ITEMS = [
@@ -30,13 +28,7 @@ const STRIP_ITEMS = [
     'Brzina i mobilni prikaz',
 ];
 
-export default function Home({
-    seo,
-    faq,
-    guides,
-    guideCount,
-    pagespeedKey,
-}: HomeProps) {
+export default function Home({ seo, faq, guides, guideCount }: HomeProps) {
     return (
         <InquiryFormProvider>
             <Seo seo={seo} />
@@ -48,7 +40,7 @@ export default function Home({
                             <p className="kicker mb-[26px]">
                                 Sajtovi, katalozi i web prodavnice
                             </p>
-                            <h1 id="hero-h">
+                            <h1 id="hero-h" className="vb-kursor">
                                 Sajt koji donosi upite, a ne samo
                                 <em> postoji.</em>
                             </h1>
@@ -75,8 +67,6 @@ export default function Home({
                             </div>
                         </div>
                     </div>
-
-                    <SpeedCheck apiKey={pagespeedKey} />
                 </div>
             </section>
 
@@ -97,11 +87,11 @@ export default function Home({
                 </div>
             </div>
 
-            <SelfCheck />
             <Services />
             <FreeAnalysis />
             <Process />
             <PriceCalculator />
+            <SelfCheck />
             <Faq items={faq} />
             <GuidesTeaser guides={guides} total={guideCount} />
             <ContactSection />

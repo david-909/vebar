@@ -374,7 +374,7 @@ export function ContactForm({
                 className={
                     isSent
                         ? 'btn btn-ok btn-block btn-lg'
-                        : 'btn btn-ink btn-block btn-lg'
+                        : 'btn btn-acc btn-block btn-lg'
                 }
                 disabled={form.processing}
                 aria-busy={form.processing}

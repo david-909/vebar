@@ -25,7 +25,7 @@ export default function Process() {
         <section className="dark" id="proces" aria-labelledby="proces-h">
             <div className="wrap">
                 <SectionHeading
-                    number="04"
+                    number="03"
                     label="Proces"
                     id="proces-h"
                     title={

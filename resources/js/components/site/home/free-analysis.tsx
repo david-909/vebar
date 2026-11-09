@@ -36,7 +36,7 @@ export default function FreeAnalysis() {
         >
             <div className="wrap">
                 <SectionHeading
-                    number="03"
+                    number="02"
                     label="Besplatna analiza"
                     id="predlog-h"
                     title="Ne verujte nam na reč"

@@ -1,6 +1,6 @@
 import { Link, router } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowIcon, LogoMark } from '@/components/site/icons';
+import { ArrowIcon, Logo } from '@/components/site/icons';
 import SiteLink from '@/components/site/site-link';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { home } from '@/routes';
@@ -76,8 +76,7 @@ export default function SiteHeader() {
                     className="logo"
                     aria-label="Vebar, početna strana"
                 >
-                    <LogoMark />
-                    Vebar
+                    <Logo variant="inverz" className="logo-svg" />
                 </Link>
                 <nav
                     id="glavni-meni"

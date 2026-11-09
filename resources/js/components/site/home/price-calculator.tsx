@@ -21,7 +21,7 @@ const SITE_TYPES: {
         label: 'Prezentacioni sajt',
         hint: 'Predstavljanje firme i usluga',
         base: 45000,
-        weeks: 2,
+        weeks: 1,
         scope: '',
     },
     {
@@ -84,22 +84,14 @@ const ADDONS = [
         value: 'tekstovi',
         label: 'Pisanje tekstova',
         price: 15000,
-        hint: '+15.000',
+        hint: 'od +15.000, zavisi od obima',
     },
-    { value: 'foto', label: 'Fotografisanje', price: 20000, hint: '+20.000' },
-    { value: 'logo', label: 'Logo i identitet', price: 18000, hint: '+18.000' },
+    { value: 'logo', label: 'Logo i identitet', price: 60000, hint: '+60.000' },
     {
         value: 'jezik',
-        label: 'Engleska verzija',
+        label: 'Višejezični sajt',
         price: 12000,
         hint: '+12.000',
-    },
-    { value: 'seo', label: 'SEO podešavanje', price: 15000, hint: '+15.000' },
-    {
-        value: 'mejl',
-        label: 'Domen i poslovni mejl',
-        price: 6000,
-        hint: '+6.000 prve godine',
     },
 ];
 
@@ -113,8 +105,13 @@ function formatPrice(value: number): string {
     );
 }
 
-function weeksLabel(weeks: number): string {
-    return weeks === 1 ? 'nedelja' : weeks < 5 ? 'nedelje' : 'nedelja';
+/** 1 -> "do nedelju dana", 3 -> "oko 3 nedelje". */
+function durationLabel(weeks: number): string {
+    if (weeks <= 1) {
+        return 'do nedelju dana';
+    }
+
+    return `oko ${weeks} ${weeks < 5 ? 'nedelje' : 'nedelja'}`;
 }
 
 function addonsLabel(count: number): string {
@@ -215,7 +212,7 @@ export default function PriceCalculator() {
         <section id="ponuda" aria-labelledby="ponuda-h">
             <div className="wrap">
                 <SectionHeading
-                    number="05"
+                    number="04"
                     label="Cena"
                     id="ponuda-h"
                     title="Koliko bi koštao vaš sajt?"
@@ -335,10 +332,10 @@ export default function PriceCalculator() {
                         </div>
                         <p className="vh" aria-live="polite">
                             Okvirna cena od {formatPrice(total)} dinara, rok
-                            izrade oko {weeks} {weeksLabel(weeks)}.
+                            izrade {durationLabel(weeks)}.
                         </p>
                         <p className="rok">
-                            Rok izrade: oko {weeks} {weeksLabel(weeks)}
+                            Rok izrade: {durationLabel(weeks)}
                         </p>
                         <div className="div" />
                         <dl>

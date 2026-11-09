@@ -82,7 +82,7 @@ export default function Services() {
         <section id="usluge" aria-labelledby="usluge-h">
             <div className="wrap">
                 <SectionHeading
-                    number="02"
+                    number="01"
                     label="Usluge"
                     id="usluge-h"
                     title="Šta radimo"
