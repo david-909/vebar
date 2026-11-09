@@ -8,24 +8,25 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-    font-family: 'InterV';
-    src: url('/fonts/inter.woff2') format('woff2');
-    font-weight: 300 700;
+    font-family: 'Inter Tight';
+    src: url('/fonts/inter-tight.woff2') format('woff2');
+    font-weight: 100 900;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'InterV';
-    src: url('/fonts/inter-ext.woff2') format('woff2');
-    font-weight: 300 700;
+    font-family: 'Inter Tight';
+    src: url('/fonts/inter-tight-ext.woff2') format('woff2');
+    font-weight: 100 900;
     font-display: swap;
     unicode-range: U+0100-024F, U+1E00-1EFF, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @theme {
     --font-sans:
-        'InterV', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Inter Tight', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);

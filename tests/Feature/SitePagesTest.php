@@ -27,7 +27,7 @@ test('the homepage renders with its metadata, faq and structured data', function
         ->where('seo.title', 'Izrada sajtova i web prodavnica — Vebar | Beograd')
         ->where('seo.canonical', 'https://vebar.rs/')
         ->where('seo.robots', 'index, follow, max-image-preview:large, max-snippet:-1')
-        ->has('faq', 7)
+        ->has('faq', 6)
         ->has('guides', 3)
         ->where('guideCount', 7)
     );

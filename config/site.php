@@ -20,7 +20,7 @@ return [
 
     'og_locale' => 'sr_RS',
 
-    'email' => env('SITE_EMAIL', 'nikola-antic@vebar.rs'),
+    'email' => env('SITE_EMAIL', 'info@vebar.rs'),
 
     'phone' => '+381694025500',
 
@@ -36,9 +36,9 @@ return [
 
     'theme_color' => '#0A0A0B',
 
-    'og_image' => '/og-image.jpg',
+    'og_image' => '/og-image.png',
 
-    'logo' => '/logo.jpg',
+    'logo' => '/brand/vebar-znak-1024.png',
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
     */
 
     'inquiries' => [
-        'recipient' => env('INQUIRY_RECIPIENT', env('SITE_EMAIL', 'nikola-antic@vebar.rs')),
+        'recipient' => env('INQUIRY_RECIPIENT', env('SITE_EMAIL', 'info@vebar.rs')),
         'per_hour' => (int) env('INQUIRY_LIMIT_PER_HOUR', 5),
         'min_seconds' => 3,
     ],
@@ -72,18 +72,5 @@ return [
         ['name' => 'Katalog za veleprodaju', 'price' => 80000, 'description' => 'Kupac nalazi artikal po šifri ili tehničkim parametrima i šalje upit za ponudu, bez poziva i čekanja.'],
         ['name' => 'Domen, hosting i mejl', 'price' => 2500, 'unit' => 'MON', 'description' => 'Registracija .rs domena, poslovni mejl, hosting sa SSL sertifikatom i rezervne kopije.'],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | PageSpeed Insights
-    |--------------------------------------------------------------------------
-    |
-    | Browser API key for the homepage speed check. It is used client-side,
-    | so restrict it to the site's domain under HTTP referrers in Google
-    | Cloud. Without a key the check is replaced by a contact prompt.
-    |
-    */
-
-    'pagespeed_key' => env('PAGESPEED_API_KEY'),
 
 ];

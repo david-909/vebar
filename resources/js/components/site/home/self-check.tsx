@@ -76,10 +76,10 @@ export default function SelfCheck() {
     };
 
     return (
-        <section className="tint" id="problem" aria-labelledby="problem-h">
+        <section className="ruled" id="problem" aria-labelledby="problem-h">
             <div className="wrap">
                 <SectionHeading
-                    number="01"
+                    number="05"
                     label="Samoprovera"
                     id="problem-h"
                     title={

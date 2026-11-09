@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import CookieConsent from '@/components/site/cookie-consent';
 import MobileActionBar from '@/components/site/mobile-action-bar';
 import SiteFooter from '@/components/site/site-footer';
 import SiteHeader from '@/components/site/site-header';
@@ -21,6 +22,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
             </main>
             <SiteFooter />
             <MobileActionBar />
+            <CookieConsent />
         </>
     );
 }

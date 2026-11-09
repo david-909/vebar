@@ -1,5 +1,9 @@
 import { usePage } from '@inertiajs/react';
-import { LogoMark } from '@/components/site/icons';
+import {
+    openCookieSettings,
+    useCookieConsentAvailable,
+} from '@/components/site/cookie-consent';
+import { Logo } from '@/components/site/icons';
 import SiteLink from '@/components/site/site-link';
 import { privacy } from '@/routes';
 import { index as guidesIndex, show as showGuide } from '@/routes/guides';
@@ -13,6 +17,7 @@ const SERVICES = [
 
 export default function SiteFooter() {
     const { site } = usePage().props;
+    const hasCookieSettings = useCookieConsentAvailable();
 
     return (
         <footer className="site-footer">
@@ -20,10 +25,13 @@ export default function SiteFooter() {
                 <div className="fgrid">
                     <div>
                         <div className="logo">
-                            <LogoMark inverted />
-                            {site.name}
+                            <Logo variant="inverz" className="logo-svg" />
+                            <span className="vh">{site.name}</span>
                         </div>
-                        <p className="m-0 max-w-[32ch] text-[0.9rem]">
+                        <p className="fslogan">
+                            Sajtovi, katalozi i web prodavnice
+                        </p>
+                        <p className="m-0 max-w-[34ch] text-[0.94rem]">
                             {site.tagline}
                         </p>
                     </div>
@@ -81,6 +89,17 @@ export default function SiteFooter() {
                                     Politika privatnosti
                                 </SiteLink>
                             </li>
+                            {hasCookieSettings && (
+                                <li>
+                                    <button
+                                        type="button"
+                                        className="flink"
+                                        onClick={openCookieSettings}
+                                    >
+                                        Podešavanja kolačića
+                                    </button>
+                                </li>
+                            )}
                         </ul>
                     </div>
                 </div>

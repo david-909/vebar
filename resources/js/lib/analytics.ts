@@ -16,9 +16,6 @@ export type AnalyticsEvent =
     | 'cta_click'
     | 'calculator_to_form'
     | 'self_check_to_form'
-    | 'provera_brzine'
-    | 'provera_brzine_rezultat'
-    | 'provera_brzine_greska'
     | 'virtual_page_view';
 
 type Params = Record<string, string | number | boolean | undefined>;

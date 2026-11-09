@@ -36,7 +36,6 @@ class PageController extends Controller
             'faq' => $faq,
             'guides' => $guides->all()->take(3)->map(fn (Guide $guide): array => $guide->toCard())->values(),
             'guideCount' => $guides->all()->count(),
-            'pagespeedKey' => config('site.pagespeed_key'),
         ]);
     }
 

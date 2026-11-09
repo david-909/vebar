@@ -1,6 +1,10 @@
 import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
-import { ArrowIcon, LogoMark } from '@/components/site/icons';
+import CookieConsent, {
+    openCookieSettings,
+    useCookieConsentAvailable,
+} from '@/components/site/cookie-consent';
+import { ArrowIcon, Logo } from '@/components/site/icons';
 import MobileActionBar from '@/components/site/mobile-action-bar';
 import SiteLink from '@/components/site/site-link';
 import { useContactTracking } from '@/hooks/use-contact-tracking';
@@ -14,6 +18,8 @@ import { privacy } from '@/routes';
 export default function LandingLayout({ children }: { children: ReactNode }) {
     const { site } = usePage().props;
 
+    const hasCookieSettings = useCookieConsentAvailable();
+
     useContactTracking();
 
     return (
@@ -24,8 +30,8 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
             <header className="site-header">
                 <div className="wrap nav">
                     <div className="logo">
-                        <LogoMark />
-                        {site.name}
+                        <Logo variant="inverz" className="logo-svg" />
+                        <span className="vh">{site.name}</span>
                     </div>
                     <div className="lnav">
                         <a href={`tel:${site.phone}`} className="lnav-tel">
@@ -63,6 +69,15 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
                             <SiteLink href={privacy.url()}>
                                 Politika privatnosti
                             </SiteLink>
+                            {hasCookieSettings && (
+                                <button
+                                    type="button"
+                                    className="flink"
+                                    onClick={openCookieSettings}
+                                >
+                                    Podešavanja kolačića
+                                </button>
+                            )}
                         </span>
                     </div>
                 </div>
@@ -73,6 +88,7 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
                 label="Pošaljite upit"
                 location="landing_mobile_bar"
             />
+            <CookieConsent />
         </>
     );
 }

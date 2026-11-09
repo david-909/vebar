@@ -10,10 +10,8 @@
 
         @include('partials.analytics-head')
 
-        <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/space-grotesk-ext.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/inter-ext.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/inter-tight.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/inter-tight-ext.woff2" as="font" type="font/woff2" crossorigin>
 
         <link rel="icon" href="/favicon.ico" sizes="48x48">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">

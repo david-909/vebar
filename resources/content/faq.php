@@ -22,11 +22,7 @@ return [
     ],
     [
         'question' => 'Koliko traje izrada?',
-        'answer' => 'Prezentacioni sajt obično 2–3 nedelje, web prodavnica 4–6 nedelja. Najveći deo vremena odlazi na prikupljanje materijala sa vaše strane: fotografija, tekstova i cenovnika.',
-    ],
-    [
-        'question' => 'Kako se plaća?',
-        'answer' => 'Polovina iznosa po prihvatanju ponude, polovina po puštanju sajta u rad. Način plaćanja i prateća dokumentacija dogovaraju se uz ponudu, u skladu sa tim da li ste firma ili privatno lice.',
+        'answer' => 'Prezentacioni sajt do nedelju dana, web prodavnica 4–6 nedelja. Najveći deo vremena odlazi na prikupljanje materijala sa vaše strane: fotografija, tekstova i cenovnika.',
     ],
     [
         'question' => 'Šta ako mi se ne svidi?',
